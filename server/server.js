@@ -5,23 +5,24 @@ const cors = require('cors');
 require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = 5000;
 
-// Middleware
 app.use(cors());
 app.use(express.json());
 
-// MongoDB Connection
-mongoose.connect(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/hirebot')
-  .then(() => console.log('✅ MongoDB Connected — Local or Atlas'))
-  .catch(err => console.log('❌ MongoDB Connection Error:', err));
+// MongoDB Atlas Connection
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log('✅ MongoDB Atlas Connected!'))
+  .catch(err => console.log('❌ DB Error:', err));
 
-// Test Route
+// HR Routes
+const hrRoutes = require('./routes/hrRoutes');
+app.use('/api/hr', hrRoutes);
+
 app.get('/', (req, res) => {
-  res.send('HireBot Backend — Live & Ready for Global Interviews!');
+  res.send('HireBot.ai Backend — Professional & Ready!');
 });
 
-// Start Server
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
 });
