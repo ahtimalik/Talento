@@ -1,58 +1,91 @@
 import express from 'express';
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+import connectDB from './config/db.js';
+import hrRoutes from './routes/hrRoutes.js';
+import publicRoutes from './routes/publicRoutes.js';
+import adminRoutes from './routes/adminRoutes.js';
+import interviewRoutes from './routes/interviewRoutes.js';
+import paymentRoutes from './routes/paymentRoutes.js';
+
+// Load environment variables
 dotenv.config();
 
+// Initialize Express app
 const app = express();
+
+// Middleware
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// Simple CORS middleware to allow requests from the dev server
+// CORS middleware
 app.use((req, res, next) => {
-  // during development allow all origins so Vite/localhost isn't blocked
-  const allowAll = process.env.NODE_ENV !== 'production'
+  const allowAll = process.env.NODE_ENV !== 'production';
   if (allowAll) {
-    res.header('Access-Control-Allow-Origin', '*')
+    res.header('Access-Control-Allow-Origin', '*');
   } else {
-    res.header('Access-Control-Allow-Origin', process.env.CLIENT_ORIGIN || 'https://your-production-domain.com')
+    res.header('Access-Control-Allow-Origin', process.env.CLIENT_ORIGIN || 'https://your-production-domain.com');
   }
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization')
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
-  if (req.method === 'OPTIONS') return res.sendStatus(200)
-  next()
-})
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
+  if (req.method === 'OPTIONS') return res.sendStatus(200);
+  next();
+});
 
-// simple request logging
+// Request logging middleware
 app.use((req, res, next) => {
-  console.log(`${new Date().toISOString()} -> ${req.method} ${req.url}`)
-  next()
-})
-
-let users = []; // temporary array for testing
-
-app.post('/api/hr/signup', async (req, res) => {
-  const { name, email, password } = req.body;
-  const existing = users.find(u => u.email === email);
-  if (existing) return res.status(400).json({ message: "Email exists" });
-
-  const hashed = await bcrypt.hash(password, 10);
-  users.push({ name, email, password: hashed, plan: 'free', interviewCount: 0 });
-  res.json({ success: true, message: "User created" });
+  console.log(`${new Date().toISOString()} -> ${req.method} ${req.url}`);
+  next();
 });
 
-app.post('/api/hr/login', async (req, res) => {
-  const { email, password } = req.body;
-  const user = users.find(u => u.email === email);
-  if (!user) return res.status(400).json({ message: "Invalid credentials" });
-
-  const match = await bcrypt.compare(password, user.password);
-  if (!match) return res.status(400).json({ message: "Invalid credentials" });
-
-  const token = jwt.sign({ email: user.email }, process.env.JWT_SECRET || "secret", { expiresIn: '1h' });
-  res.json({ success: true, token });
+// Routes
+app.get('/', (req, res) => {
+  res.json({
+    success: true,
+    message: 'Talento API Server is running',
+    version: '2.0.0',
+    endpoints: {
+      public: '/api/public/*',
+      hr: '/api/hr/*',
+      admin: '/api/admin/*'
+    }
+  });
 });
 
-app.get('/', (req, res) => res.send('Server running'));
+app.use('/api/public', publicRoutes);
+app.use('/api/hr', hrRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/interview', interviewRoutes);
+app.use('/api/payment', paymentRoutes);
 
+// 404 handler
+app.use((req, res) => {
+  res.status(404).json({ success: false, message: 'Route not found' });
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error('Server Error:', err);
+  res.status(500).json({ success: false, message: 'Internal server error' });
+});
+
+// Connect to Database and Start Server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+const startServer = async () => {
+  try {
+    // Connect to MongoDB
+    await connectDB();
+
+    // Start Express server
+    app.listen(PORT, () => {
+      console.log(`\n🚀 Server is running on port ${PORT}`);
+      console.log(`📍 Local: http://localhost:${PORT}`);
+      console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}\n`);
+    });
+  } catch (error) {
+    console.error('Failed to start server:', error);
+    process.exit(1);
+  }
+};
+
+startServer();
