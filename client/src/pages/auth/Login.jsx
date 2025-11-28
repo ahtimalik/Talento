@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
-import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
-import FormInput from '../components/FormInput'
-import PrimaryButton from '../components/PrimaryButton'
-import AuthCard from '../components/AuthCard'
+import { login } from '../../services/api'
+import FormInput from '../../components/FormInput'
+import PrimaryButton from '../../components/PrimaryButton'
+import AuthCard from '../../components/AuthCard'
 
 export default function Login() {
   const [email, setEmail] = useState('')
@@ -17,20 +17,26 @@ export default function Login() {
     e.preventDefault()
     setError(null)
     setMessage(null)
+
     if (!email || !password) {
       setError('Please enter email and password')
       return
     }
+
     setLoading(true)
     try {
-      const res = await axios.post('http://localhost:5000/api/hr/login', { email, password })
-      if (res?.data?.token) {
-        localStorage.setItem('token', res.data.token)
-        if (res.data.user) localStorage.setItem('user', JSON.stringify(res.data.user))
-        setMessage('Login successful')
-        setTimeout(() => navigate('/dashboard'), 800)
+      const res = await login({ email, password })
+
+      // Save token and user data
+      localStorage.setItem('token', res.data.token)
+      localStorage.setItem('user', JSON.stringify(res.data.user))
+
+      setMessage('Login successful! Redirecting...')
+
+      if (res.data.user.role === 'superadmin') {
+        setTimeout(() => navigate('/admin'), 800)
       } else {
-        setError(res?.data?.message || 'Login failed')
+        setTimeout(() => navigate('/dashboard'), 800)
       }
     } catch (err) {
       setError(err?.response?.data?.message || err.message || 'Server error')
@@ -47,14 +53,30 @@ export default function Login() {
       </div>
 
       <form onSubmit={handleSubmit} className="mt-6 space-y-6">
-          <FormInput id="email" label="Email" type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} />
+        <FormInput
+          id="email"
+          label="Email"
+          type="email"
+          placeholder="you@example.com"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
 
-          <FormInput id="password" label="Password" type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
+        <FormInput
+          id="password"
+          label="Password"
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
 
-          {error && <div className="text-sm text-red-600">{error}</div>}
-          {message && <div className="text-sm text-green-600">{message}</div>}
+        {error && <div className="text-sm text-red-600 bg-red-50 p-3 rounded">{error}</div>}
+        {message && <div className="text-sm text-green-600 bg-green-50 p-3 rounded">{message}</div>}
 
-          <PrimaryButton loading={loading} disabled={false}>{loading ? 'Signing in...' : 'Sign in'}</PrimaryButton>
+        <PrimaryButton loading={loading} disabled={loading}>
+          {loading ? 'Signing in...' : 'Sign in'}
+        </PrimaryButton>
       </form>
 
       <div className="mt-6 text-center text-sm text-gray-600">

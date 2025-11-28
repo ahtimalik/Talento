@@ -17,9 +17,9 @@ export default function AuthCard({ children }) {
   }, [debug])
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-8 sm:py-12 w-[500px]">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-8 sm:py-12 w-full">
       <div
-        className="w-full bg-white p-4 sm:p-8 md:p-10 rounded-2xl shadow-xl ring-1 ring-gray-100 mx-auto box-border"
+        className="w-full max-w-[500px] bg-white p-4 sm:p-8 md:p-10 rounded-2xl shadow-xl ring-1 ring-gray-100 mx-auto box-border"
       >
         <div
           ref={innerRef}
