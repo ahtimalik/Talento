@@ -5,12 +5,21 @@ import HR from '../models/HR.js';
 const adminAuth = async (req, res, next) => {
     try {
         // Get token from header
-        const token = req.header('Authorization')?.replace('Bearer ', '');
+        const authHeader = req.headers.authorization || req.headers.Authorization;
+
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            return res.status(401).json({
+                success: false,
+                message: 'Access denied. No token provided.'
+            });
+        }
+
+        const token = authHeader.split(' ')[1];
 
         if (!token) {
             return res.status(401).json({
                 success: false,
-                message: 'Access denied. No token provided.'
+                message: 'Access denied. Invalid token format.'
             });
         }
 
@@ -40,9 +49,25 @@ const adminAuth = async (req, res, next) => {
         next();
     } catch (error) {
         console.error('Admin auth error:', error);
+
+        // Handle specific JWT errors
+        if (error.name === 'TokenExpiredError') {
+            return res.status(401).json({
+                success: false,
+                message: 'Token has expired. Please login again.'
+            });
+        }
+
+        if (error.name === 'JsonWebTokenError') {
+            return res.status(401).json({
+                success: false,
+                message: 'Invalid token. Please login again.'
+            });
+        }
+
         return res.status(401).json({
             success: false,
-            message: 'Invalid or expired token.'
+            message: 'Authentication failed.'
         });
     }
 };

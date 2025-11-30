@@ -7,7 +7,7 @@ export default function Layout() {
     return (
         <div className="min-h-screen flex flex-col bg-white">
             <Header />
-            <main className="flex-grow">
+            <main className="flex-grow pt-20">
                 <Outlet />
             </main>
             <Footer />

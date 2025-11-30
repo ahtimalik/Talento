@@ -49,27 +49,7 @@ export default function Dashboard() {
 
     return (
         <div className="min-h-screen bg-gray-50">
-            {/* Header */}
-            <header className="bg-white shadow-sm sticky top-0 z-10">
-                <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-                    <div className="flex items-center gap-2">
-                        <span className="text-2xl font-extrabold text-indigo-600">Talento</span>
-                        <span className="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs font-medium">HR DASHBOARD</span>
-                    </div>
-                    <div className="flex items-center gap-4">
-                        <div className="text-right hidden sm:block">
-                            <p className="text-sm font-bold text-gray-900">{user.name}</p>
-                            <p className="text-xs text-gray-500">{user.companyName}</p>
-                        </div>
-                        <button
-                            onClick={handleLogout}
-                            className="text-sm text-red-600 hover:text-red-800 font-medium"
-                        >
-                            Logout
-                        </button>
-                    </div>
-                </div>
-            </header>
+
 
             <main className="max-w-7xl mx-auto px-4 py-8">
                 {/* Welcome & Stats */}
@@ -141,8 +121,8 @@ export default function Dashboard() {
                             }
                         }}
                         className={`px-6 py-2 rounded-lg font-bold text-white shadow-md transition ${isLimitReached
-                                ? 'bg-amber-500 hover:bg-amber-600'
-                                : 'bg-indigo-600 hover:bg-indigo-700'
+                            ? 'bg-amber-500 hover:bg-amber-600'
+                            : 'bg-indigo-600 hover:bg-indigo-700'
                             }`}
                     >
                         {isLimitReached ? 'Upgrade to Create' : '+ Create New Interview'}
@@ -177,8 +157,8 @@ export default function Dashboard() {
                                             </td>
                                             <td className="px-6 py-4">
                                                 <span className={`px-2 py-1 rounded-full text-xs font-bold ${interview.status === 'completed' ? 'bg-green-100 text-green-700' :
-                                                        interview.status === 'in-progress' ? 'bg-blue-100 text-blue-700' :
-                                                            'bg-gray-100 text-gray-600'
+                                                    interview.status === 'in-progress' ? 'bg-blue-100 text-blue-700' :
+                                                        'bg-gray-100 text-gray-600'
                                                     }`}>
                                                     {interview.status.toUpperCase()}
                                                 </span>

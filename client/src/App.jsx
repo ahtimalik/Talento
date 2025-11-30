@@ -12,6 +12,7 @@ import Login from './pages/auth/Login';
 import Dashboard from './pages/hr/Dashboard';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
+import PublicRoute from './components/PublicRoute';
 
 export default function App() {
   return (
@@ -26,9 +27,11 @@ export default function App() {
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/terms" element={<Terms />} />
 
-          {/* Auth routes */}
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/login" element={<Login />} />
+          {/* Auth routes - wrapped in PublicRoute to redirect if already logged in */}
+          <Route element={<PublicRoute />}>
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/login" element={<Login />} />
+          </Route>
 
           {/* Protected routes */}
           <Route element={<ProtectedRoute />}>
