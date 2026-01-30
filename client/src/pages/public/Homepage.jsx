@@ -481,33 +481,39 @@ export default function Homepage() {
                 </div>
             </section>
 
-            {/* Expanded FAQ - Clean White */}
+            {/* Expanded FAQ - Modern Grid Layout */}
             <section className="py-24 bg-white border-t border-secondary-100">
-                <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="text-center mb-16">
-                        <h2 className="text-3xl font-bold text-secondary-900 mb-4">Frequently Asked Questions</h2>
-                        <p className="text-secondary-500">Everything you need to know about the product and billing.</p>
-                    </div>
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="grid lg:grid-cols-3 gap-12 lg:gap-24">
+                        <div className="lg:col-span-1">
+                            <h2 className="text-3xl font-bold text-secondary-900 mb-6">Frequently asked questions</h2>
+                            <p className="text-secondary-500 mb-8 text-lg">
+                                Have more questions? We represent the top 1% of engineering talent, and we're here to help you hire them.
+                            </p>
+                            <button className="inline-flex items-center justify-center px-6 py-3 border border-secondary-200 shadow-sm text-base font-medium rounded-xl text-secondary-900 bg-white hover:bg-secondary-50 transition-colors">
+                                Contact Support
+                            </button>
+                        </div>
 
-                    <div className="space-y-4">
-                        {[
-                            { q: "Is the AI actually fair? How do you prevent bias?", a: "Yes. Our AI is trained on anonymized data and specifically calibrated to ignore gender, ethnicity, and age markers. We rigorously test for disparate impact and comply with EEOC guidelines." },
-                            { q: "Can I customize the interview questions?", a: "Absolutely. You can use our bank of 10,000+ vetted questions, or input your own. You can also upload a job description and let the AI generate a custom interview script for you." },
-                            { q: "What happens if a candidate cheats?", a: "We have multi-layered proctoring. We track tab switching, copy-paste events, and use audio/video analysis to detect if someone else is in the room or feeding answers." },
-                            { q: "Do you integrate with Greenhouse?", a: "Yes, we have deep bi-directional integration with Greenhouse, Lever, Ashby, and Workday. Candidates automatically sync between platforms." },
-                        ].map((item, i) => (
-                            <div key={i} className="border-b border-secondary-100 last:border-0">
-                                <button onClick={() => toggleFaq(i)} className="w-full flex items-center justify-between py-6 text-left hover:text-indigo-600 transition-colors">
-                                    <span className="font-medium text-secondary-900 text-lg">{item.q}</span>
-                                    {openFaq === i ? <ChevronUp className="text-indigo-500" /> : <ChevronDown className="text-secondary-400" />}
-                                </button>
-                                {openFaq === i && (
-                                    <div className="pb-6 text-secondary-600 leading-relaxed animate-in slide-in-from-top-1">
-                                        {item.a}
+                        <div className="lg:col-span-2">
+                            <div className="grid sm:grid-cols-2 gap-x-8 gap-y-12">
+                                {[
+                                    { q: "Is the AI actually fair?", a: "Yes. Our AI is trained on anonymized data and specifically calibrated to ignore gender, ethnicity, and age markers. We rigorously test for disparate impact." },
+                                    { q: "Can I use my own questions?", a: "Absolutely. You can use our bank of 10,000+ vetted questions, or input your own. You can also upload a job description to auto-generate scripts." },
+                                    { q: "How do you prevent cheating?", a: "We have multi-layered proctoring. We track tab switching, copy-paste events, and use audio/video analysis to detect if someone else is in the room." },
+                                    { q: "Do you integrate with Greenhouse?", a: "Yes, we have deep bi-directional integration with Greenhouse, Lever, Ashby, and Workday. Candidates automatically sync between platforms." },
+                                    { q: "Is my data secure?", a: "We are SOC2 Type II compliant and GDPR ready. Your data is encrypted at rest and in transit, and we never train our public models on your private data." },
+                                    { q: "What is the pricing model?", a: "We charge per 'active candidate' accessed. No per-seat limits. Start for free, scale as you grow. Enterprise plans available for high volume." },
+                                ].map((item, i) => (
+                                    <div key={i}>
+                                        <h3 className="text-lg font-bold text-secondary-900 mb-3">{item.q}</h3>
+                                        <p className="text-secondary-500 leading-relaxed text-sm">
+                                            {item.a}
+                                        </p>
                                     </div>
-                                )}
+                                ))}
                             </div>
-                        ))}
+                        </div>
                     </div>
                 </div>
             </section>
