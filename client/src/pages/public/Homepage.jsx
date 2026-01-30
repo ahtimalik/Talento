@@ -82,7 +82,7 @@ export default function Homepage() {
                             </p>
 
                             <div className="flex flex-col sm:flex-row gap-4 mb-10">
-                                <button onClick={() => navigate('/signup')} className="px-8 py-4 bg-secondary-900 text-white rounded-xl font-bold text-base hover:bg-secondary-800 transition shadow-xl shadow-secondary-900/10 hover:shadow-2xl flex items-center justify-center gap-2 group">
+                                <button onClick={() => navigate('/signup')} className="px-8 py-4 bg-secondary-900 text-indigo-600 rounded-xl font-bold text-base hover:bg-secondary-800 transition shadow-xl shadow-secondary-900/10 hover:shadow-2xl flex items-center justify-center gap-2 group">
                                     Start Free Trial
                                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                                 </button>
@@ -529,7 +529,7 @@ export default function Homepage() {
                         Join 2,500+ companies using Talento to identify the best engineering talent in the world, instantly.
                     </p>
                     <div className="flex flex-col sm:flex-row justify-center gap-4">
-                        <button onClick={() => navigate('/signup')} className="px-10 py-5 bg-secondary-900 text-white rounded-2xl font-bold text-lg hover:bg-secondary-800 transition shadow-2xl hover:scale-[1.02] transform duration-200">
+                        <button onClick={() => navigate('/signup')} className="px-10 py-5 bg-secondary-900 text-indigo-600 rounded-2xl font-bold text-lg hover:bg-secondary-800 transition shadow-2xl hover:scale-[1.02] transform duration-200">
                             Start Free Trial
                         </button>
                         <button className="px-10 py-5 bg-white text-secondary-900 border border-secondary-200 rounded-2xl font-bold text-lg hover:bg-white/50 transition shadow-sm">
