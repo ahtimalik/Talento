@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Menu, X, ChevronDown } from 'lucide-react';
 
-// Custom hook for media query
 function useMediaQuery(query) {
     const [matches, setMatches] = useState(false);
 
@@ -26,7 +26,6 @@ export default function Header() {
     const [user, setUser] = useState(null);
     const isDesktop = useMediaQuery('(min-width: 768px)');
 
-    // Check auth state on mount and when location changes (in case of login/logout)
     useEffect(() => {
         const checkAuth = () => {
             const token = localStorage.getItem('token');
@@ -38,13 +37,10 @@ export default function Header() {
             }
         };
         checkAuth();
-
-        // Listen for storage events (in case of logout in another tab)
         window.addEventListener('storage', checkAuth);
         return () => window.removeEventListener('storage', checkAuth);
     }, [location]);
 
-    // Handle scroll effect
     useEffect(() => {
         const handleScroll = () => {
             setScrolled(window.scrollY > 10);
@@ -66,69 +62,70 @@ export default function Header() {
         { name: 'Sample Report', path: '/sample-report' },
     ];
 
+    // Derived classes for state
+    const headerClasses = `fixed top-0 w-full z-50 transition-all duration-300 ${scrolled
+            ? 'bg-surface/90 backdrop-blur-md border-b border-secondary-200 shadow-sm py-2'
+            : 'bg-transparent py-4'
+        }`;
+
     return (
-        <header
-            className={`fixed top-0 w-full z-50 transition-all duration-300 ${scrolled
-                ? 'bg-white/90 backdrop-blur-md shadow-sm border-b border-gray-100'
-                : 'bg-white/80 backdrop-blur-sm border-b border-transparent'
-                }`}
-        >
+        <header className={headerClasses}>
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex items-center justify-between h-20">
+                <div className="flex items-center justify-between">
                     {/* Logo */}
-                    <Link to="/" className="flex items-center space-x-2 group">
-                        <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg transform group-hover:scale-105 transition-transform duration-200">
-                            <span className="text-2xl font-black text-white">T</span>
+                    <Link to="/" className="flex items-center gap-2 group">
+                        <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center shadow-md transform group-hover:rotate-3 transition-transform duration-200">
+                            <span className="text-lg font-black text-white">T</span>
                         </div>
-                        <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600 tracking-tight">
-                            Talento
-                        </span>
+                        <span className="text-xl font-bold text-secondary-900 tracking-tight">Talento</span>
                     </Link>
 
                     {/* Desktop Navigation */}
                     {isDesktop && (
-                        <nav className="flex items-center space-x-6">
-                            {navLinks.map((link) => (
-                                <Link
-                                    key={link.name}
-                                    to={link.path}
-                                    className={`text-sm font-semibold transition-colors duration-200 ${location.pathname === link.path
-                                        ? 'text-indigo-600'
-                                        : 'text-gray-900 hover:text-indigo-600'
-                                        }`}
-                                >
-                                    {link.name}
-                                </Link>
-                            ))}
+                        <nav className="flex items-center gap-1">
+                            <div className="flex items-center rounded-full bg-secondary-50/50 border border-secondary-200/50 p-1 mr-4">
+                                {navLinks.map((link) => (
+                                    <Link
+                                        key={link.name}
+                                        to={link.path}
+                                        className={`px-4 py-1.5 text-sm font-medium rounded-full transition-all duration-200 ${location.pathname === link.path
+                                                ? 'bg-white text-primary-600 shadow-xs'
+                                                : 'text-secondary-600 hover:text-secondary-900 hover:bg-secondary-100/50'
+                                            }`}
+                                    >
+                                        {link.name}
+                                    </Link>
+                                ))}
+                            </div>
 
-                            <div className="w-px h-6 bg-gray-200"></div>
+                            <div className="h-4 w-px bg-secondary-200 mx-2"></div>
 
                             {user ? (
-                                <div className="flex items-center space-x-4">
+                                <div className="flex items-center gap-3">
                                     <Link
                                         to={user.role === 'superadmin' ? '/admin' : '/dashboard'}
-                                        className="text-sm font-semibold text-gray-900 hover:text-indigo-600 transition-colors"
+                                        className="text-sm font-medium text-secondary-600 hover:text-primary-600 transition-colors"
                                     >
                                         Dashboard
                                     </Link>
                                     <button
                                         onClick={handleLogout}
-                                        className="px-4 py-2 bg-gray-100 text-gray-900 rounded-lg font-semibold text-sm hover:bg-gray-200 transition-all duration-200"
+                                        className="px-3 py-1.5 bg-secondary-100 text-secondary-700 rounded-lg font-medium text-sm hover:bg-secondary-200 transition-colors"
                                     >
                                         Log out
                                     </button>
                                 </div>
                             ) : (
-                                <div className="flex items-center space-x-4">
+                                <div className="flex items-center gap-3">
                                     <Link
                                         to="/login"
-                                        className="text-sm font-semibold text-gray-900 hover:text-indigo-600 transition-colors"
+                                        className="text-sm font-medium text-secondary-600 hover:text-primary-600 transition-colors"
                                     >
-                                        Login
+                                        Log in
                                     </Link>
                                     <Link
                                         to="/signup"
-                                        className="px-5 py-2.5 bg-indigo-600 text-white rounded-xl font-semibold text-sm hover:bg-indigo-700 shadow-md hover:shadow-lg transition-all duration-200"
+                                        className="px-4 py-2 bg-primary-600 text-white rounded-lg font-medium text-sm hover:bg-primary-700 shadow-md shadow-primary-500/20 transition-all duration-200 hover:-translate-y-0.5"
                                     >
                                         Start Free Trial
                                     </Link>
@@ -137,47 +134,39 @@ export default function Header() {
                         </nav>
                     )}
 
-                    {/* Mobile menu button */}
+                    {/* Mobile toggle */}
                     {!isDesktop && (
                         <button
                             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                            className="p-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
+                            className="p-2 rounded-lg text-secondary-600 hover:bg-secondary-50 transition-colors"
                         >
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                {mobileMenuOpen ? (
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                ) : (
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                                )}
-                            </svg>
+                            {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
                         </button>
                     )}
                 </div>
 
                 {/* Mobile Navigation */}
                 {!isDesktop && mobileMenuOpen && (
-                    <div className="py-4 space-y-2 border-t border-gray-100 bg-white absolute left-0 right-0 px-4 shadow-xl">
+                    <div className="absolute top-full left-0 right-0 bg-white border-b border-secondary-100 shadow-lg animate-in slide-in-from-top-2 p-4 flex flex-col gap-2">
                         {navLinks.map((link) => (
                             <Link
                                 key={link.name}
                                 to={link.path}
-                                className={`block px-4 py-3 rounded-xl font-medium transition-colors ${location.pathname === link.path
-                                    ? 'bg-indigo-50 text-indigo-600'
-                                    : 'text-gray-600 hover:bg-gray-50 hover:text-indigo-600'
+                                className={`px-4 py-3 rounded-lg font-medium transition-colors ${location.pathname === link.path
+                                        ? 'bg-primary-50 text-primary-700'
+                                        : 'text-secondary-600 hover:bg-secondary-50'
                                     }`}
                                 onClick={() => setMobileMenuOpen(false)}
                             >
                                 {link.name}
                             </Link>
                         ))}
-
-                        <div className="h-px bg-gray-100 my-2"></div>
-
+                        <div className="h-px bg-secondary-100 my-2"></div>
                         {user ? (
                             <>
                                 <Link
                                     to={user.role === 'superadmin' ? '/admin' : '/dashboard'}
-                                    className="block px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-indigo-600 rounded-xl font-medium"
+                                    className="px-4 py-3 rounded-lg font-medium text-secondary-600 hover:bg-secondary-50"
                                     onClick={() => setMobileMenuOpen(false)}
                                 >
                                     Dashboard
@@ -187,7 +176,7 @@ export default function Header() {
                                         handleLogout();
                                         setMobileMenuOpen(false);
                                     }}
-                                    className="w-full text-left px-4 py-3 text-red-600 hover:bg-red-50 rounded-xl font-medium"
+                                    className="text-left px-4 py-3 rounded-lg font-medium text-red-600 hover:bg-red-50"
                                 >
                                     Log out
                                 </button>
@@ -196,14 +185,14 @@ export default function Header() {
                             <>
                                 <Link
                                     to="/login"
-                                    className="block px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-indigo-600 rounded-xl font-medium"
+                                    className="px-4 py-3 rounded-lg font-medium text-secondary-600 hover:bg-secondary-50"
                                     onClick={() => setMobileMenuOpen(false)}
                                 >
-                                    Login
+                                    Log in
                                 </Link>
                                 <Link
                                     to="/signup"
-                                    className="block px-4 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-semibold text-center shadow-lg shadow-indigo-500/30"
+                                    className="px-4 py-3 rounded-lg font-medium bg-primary-600 text-white text-center shadow-md"
                                     onClick={() => setMobileMenuOpen(false)}
                                 >
                                     Start Free Trial

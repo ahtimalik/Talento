@@ -1,34 +1,56 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@config "../tailwind.config.cjs";
 
-/* Custom global styles (avoid @apply to prevent PostCSS ordering issues) */
-html,
-body,
-#root {
-  height: 100%;
+/* theme() function can be used here if needed, or stick to config file */
+
+@layer base {
+  :root {
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --bg-primary: #f8fafc;
+    --bg-surface: #ffffff;
+  }
+
+  html {
+    -webkit-tap-highlight-color: transparent;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-secondary-900 antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  /* Improved scrollbar for webkit */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-secondary-300 hover:bg-secondary-400 rounded-full transition-colors;
+  }
 }
 
-body {
-  background-color: #f8fafc;
-  /* approx. bg-gray-50 */
-  color: #111827;
-  /* approx. text-gray-800 */
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .glass {
+    @apply bg-white/70 backdrop-blur-md border border-white/20 shadow-glass;
+  }
+
+  .glass-dark {
+    @apply bg-secondary-900/80 backdrop-blur-md border border-white/5;
+  }
 }
 
-a {
-  text-underline-offset: 2px;
-}
-
-/* Container to center pages */
+/* App container override if needed, but preferring Layout component */
 .app-container {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding-left: 1rem;
-  padding-right: 1rem;
+  @apply min-h-screen flex items-center justify-center p-4;
 }
