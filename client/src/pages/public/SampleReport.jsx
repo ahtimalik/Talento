@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getSampleReport } from '../../services/api';
+import {
+    Download, Share2, Shield, Calendar, Clock,
+    CheckCircle, AlertCircle, FileText, ChevronLeft, ChevronRight
+} from 'lucide-react';
 
 export default function SampleReport() {
     const [report, setReport] = useState(null);
@@ -9,11 +13,38 @@ export default function SampleReport() {
 
     useEffect(() => {
         const fetchReport = async () => {
+            // Mock data fallback
+            const mockReport = {
+                candidateName: 'Alex Morgan',
+                jobTitle: 'Senior Full Stack Engineer',
+                completedAt: new Date().toISOString(),
+                aiAnalysis: {
+                    confidenceScore: 92,
+                    summary: "Alex demonstrates exceptional command of modern web technologies. Their explanation of distributed system design patterns was particularly impressive, showing deep understanding of scalability trade-offs. Communication is clear, concise, and technical.",
+                    strengths: [
+                        "Deep understanding of React concurrency and state management",
+                        "Design system architecture experience",
+                        "Strong grasp of database normalization vs denormalization",
+                        "Excellent communication of complex technical concepts"
+                    ],
+                    concerns: [
+                        "Limited hands-on experience with Kubernetes",
+                        "Could improve initial estimation accuracy"
+                    ],
+                    keywordAnalysis: ['React', 'Node.js', 'System Design', 'Redis', 'PostgreSQL', 'AWS', 'TypeScript', 'Docker']
+                }
+            };
+
             try {
                 const res = await getSampleReport();
-                setReport(res.data.report);
+                if (res.data && res.data.report) {
+                    setReport(res.data.report);
+                } else {
+                    setReport(mockReport);
+                }
             } catch (error) {
-                console.error('Error fetching sample report:', error);
+                console.error('Error fetching sample report, using fallback:', error);
+                setReport(mockReport);
             } finally {
                 setLoading(false);
             }
@@ -24,130 +55,137 @@ export default function SampleReport() {
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="text-xl text-gray-600">Loading sample report...</div>
+            <div className="min-h-screen flex items-center justify-center bg-secondary-50">
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-indigo-600"></div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-gray-100 py-12 px-4">
-            <div className="max-w-4xl mx-auto">
-                <div className="bg-white shadow-xl rounded-2xl overflow-hidden">
-                    {/* Header */}
-                    <div className="bg-indigo-600 text-white p-8">
-                        <div className="flex justify-between items-start">
-                            <div>
-                                <h1 className="text-3xl font-bold mb-2">Interview Report</h1>
-                                <p className="opacity-90">Candidate Analysis & Insights</p>
-                            </div>
-                            <div className="bg-white/20 px-4 py-2 rounded-lg backdrop-blur-sm">
-                                <span className="text-sm font-semibold">SAMPLE REPORT</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Candidate Info */}
-                    <div className="p-8 border-b border-gray-200 bg-gray-50">
-                        <div className="flex flex-wrap gap-8">
-                            <div>
-                                <p className="text-sm text-gray-500 uppercase tracking-wide font-semibold">Candidate</p>
-                                <p className="text-xl font-bold text-gray-900">{report?.candidateName}</p>
-                            </div>
-                            <div>
-                                <p className="text-sm text-gray-500 uppercase tracking-wide font-semibold">Role</p>
-                                <p className="text-xl font-bold text-gray-900">{report?.jobTitle}</p>
-                            </div>
-                            <div>
-                                <p className="text-sm text-gray-500 uppercase tracking-wide font-semibold">Date</p>
-                                <p className="text-xl font-bold text-gray-900">
-                                    {new Date(report?.completedAt).toLocaleDateString()}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Scores & Summary */}
-                    <div className="p-8 grid md:grid-cols-3 gap-8">
-                        <div className="md:col-span-1">
-                            <div className="bg-indigo-50 rounded-xl p-6 text-center">
-                                <p className="text-sm text-indigo-600 font-bold uppercase mb-2">Confidence Score</p>
-                                <div className="text-5xl font-extrabold text-indigo-600 mb-2">
-                                    {report?.aiAnalysis?.confidenceScore}%
-                                </div>
-                                <p className="text-xs text-gray-500">Based on AI evaluation of technical accuracy and communication.</p>
-                            </div>
-                        </div>
-                        <div className="md:col-span-2">
-                            <h3 className="text-lg font-bold text-gray-900 mb-3">Executive Summary</h3>
-                            <p className="text-gray-700 leading-relaxed">
-                                {report?.aiAnalysis?.summary}
-                            </p>
-                        </div>
-                    </div>
-
-                    {/* Detailed Analysis */}
-                    <div className="px-8 pb-8 grid md:grid-cols-2 gap-8">
+        <div className="min-h-screen bg-secondary-50 font-sans text-secondary-900 pb-24">
+            {/* Context Header */}
+            <div className="bg-white border-b border-secondary-200 sticky top-0 z-20 shadow-sm">
+                <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                        <button onClick={() => navigate('/')} className="p-2 hover:bg-secondary-50 rounded-full text-secondary-500 transition">
+                            <ChevronLeft size={20} />
+                        </button>
                         <div>
-                            <h3 className="text-lg font-bold text-green-700 mb-4 flex items-center gap-2">
-                                <span>✓</span> Key Strengths
+                            <h1 className="text-sm font-bold text-secondary-900 flex items-center gap-2">
+                                <FileText size={16} className="text-secondary-400" />
+                                Candidate Report
+                            </h1>
+                            <p className="text-xs text-secondary-500">Generated by Talento AI • {new Date(report?.completedAt).toLocaleDateString()}</p>
+                        </div>
+                    </div>
+                    <div className="flex gap-2">
+                        <button className="hidden sm:flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-secondary-600 bg-secondary-50 border border-secondary-200 rounded-md hover:bg-secondary-100 transition">
+                            <Share2 size={14} /> Share
+                        </button>
+                        <button className="flex items-center gap-2 px-3 py-1.5 text-xs font-bold text-white bg-indigo-600 rounded-md hover:bg-indigo-700 transition shadow-sm">
+                            <Download size={14} /> Download PDF
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {/* Main Report "Paper" */}
+            <div className="max-w-[850px] mx-auto mt-8 sm:mt-12 bg-white sm:rounded-none sm:rounded-t-sm shadow-xl min-h-[1100px] relative">
+                {/* Top Decorator Line */}
+                <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500"></div>
+
+                <div className="p-8 sm:p-16">
+                    {/* Report Header */}
+                    <div className="flex flex-col sm:flex-row justify-between items-start border-b-2 border-secondary-100 pb-8 mb-12">
+                        <div>
+                            <h1 className="text-3xl font-display font-bold text-secondary-900 mb-1">{report?.candidateName}</h1>
+                            <p className="text-lg text-secondary-500 font-medium">{report?.jobTitle}</p>
+                        </div>
+                        <div className="mt-6 sm:mt-0 flex items-center gap-4">
+                            <div className="text-right">
+                                <p className="text-xs uppercase tracking-widest font-bold text-secondary-400 mb-1">Confidence</p>
+                                <p className="text-3xl font-bold text-emerald-600">{report?.aiAnalysis?.confidenceScore}%</p>
+                            </div>
+                            <div className="w-16 h-16 rounded-full border-4 border-emerald-100 flex items-center justify-center">
+                                <Shield className="w-8 h-8 text-emerald-600" />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Executive Summary */}
+                    <div className="mb-12">
+                        <h3 className="text-sm font-bold uppercase tracking-widest text-secondary-400 mb-4">Executive Summary</h3>
+                        <div className="p-6 bg-secondary-50 rounded-xl border border-secondary-100 text-secondary-700 leading-relaxed text-sm text-justify">
+                            {report?.aiAnalysis?.summary}
+                        </div>
+                    </div>
+
+                    {/* Breakdown Grid */}
+                    <div className="grid md:grid-cols-2 gap-12 mb-12">
+                        <div>
+                            <h3 className="flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-emerald-700 mb-6 pb-2 border-b border-secondary-100">
+                                <CheckCircle size={16} /> Key Strengths
                             </h3>
-                            <ul className="space-y-3">
-                                {report?.aiAnalysis?.strengths.map((strength, idx) => (
-                                    <li key={idx} className="flex items-start gap-2 text-gray-700 bg-green-50 p-3 rounded-lg">
-                                        <span className="text-green-500 mt-0.5">•</span>
-                                        {strength}
+                            <ul className="space-y-4">
+                                {report?.aiAnalysis?.strengths.map((str, i) => (
+                                    <li key={i} className="flex gap-3 text-sm text-secondary-700">
+                                        <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0"></div>
+                                        <span className="leading-relaxed">{str}</span>
                                     </li>
                                 ))}
                             </ul>
                         </div>
                         <div>
-                            <h3 className="text-lg font-bold text-amber-700 mb-4 flex items-center gap-2">
-                                <span>!</span> Areas for Improvement
+                            <h3 className="flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-amber-600 mb-6 pb-2 border-b border-secondary-100">
+                                <AlertCircle size={16} /> Improvements
                             </h3>
-                            <ul className="space-y-3">
-                                {report?.aiAnalysis?.concerns.map((concern, idx) => (
-                                    <li key={idx} className="flex items-start gap-2 text-gray-700 bg-amber-50 p-3 rounded-lg">
-                                        <span className="text-amber-500 mt-0.5">•</span>
-                                        {concern}
+                            <ul className="space-y-4">
+                                {report?.aiAnalysis?.concerns.map((con, i) => (
+                                    <li key={i} className="flex gap-3 text-sm text-secondary-700">
+                                        <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0"></div>
+                                        <span className="leading-relaxed">{con}</span>
                                     </li>
                                 ))}
                             </ul>
                         </div>
                     </div>
 
-                    {/* Keywords */}
-                    <div className="px-8 pb-8">
-                        <h3 className="text-lg font-bold text-gray-900 mb-4">Detected Keywords</h3>
+                    {/* Technical Skills Map */}
+                    <div className="mb-12">
+                        <h3 className="text-sm font-bold uppercase tracking-widest text-secondary-400 mb-6">Technical Competencies</h3>
                         <div className="flex flex-wrap gap-2">
-                            {report?.aiAnalysis?.keywordAnalysis.map((keyword, idx) => (
-                                <span key={idx} className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-medium">
-                                    {keyword}
+                            {report?.aiAnalysis?.keywordAnalysis.map((kw, i) => (
+                                <span key={i} className="px-3 py-1.5 bg-white border border-secondary-200 rounded-md text-xs font-medium text-secondary-600 shadow-sm">
+                                    {kw}
+                                </span>
+                            ))}
+                            {['System Design', 'API Architecture', 'React Performance', 'CI/CD Pipelines'].map((kw, i) => (
+                                <span key={`extra-${i}`} className="px-3 py-1.5 bg-white border border-secondary-200 rounded-md text-xs font-medium text-secondary-600 shadow-sm">
+                                    {kw}
                                 </span>
                             ))}
                         </div>
                     </div>
 
-                    {/* CTA Footer */}
-                    <div className="bg-gray-50 p-8 text-center border-t border-gray-200">
-                        <h3 className="text-xl font-bold text-gray-900 mb-2">Want reports like this?</h3>
-                        <p className="text-gray-600 mb-6">Start screening candidates with Talento today.</p>
-                        <div className="flex gap-4 justify-center">
-                            <button
-                                onClick={() => navigate('/signup')}
-                                className="px-6 py-2 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition"
-                            >
-                                Start Free Trial
-                            </button>
-                            <button
-                                onClick={() => navigate('/')}
-                                className="px-6 py-2 text-gray-600 font-semibold hover:text-gray-900"
-                            >
-                                Back to Home
-                            </button>
+                    {/* Footer Watermark */}
+                    <div className="mt-24 pt-8 border-t border-secondary-100 flex justify-between items-center opacity-40 hover:opacity-100 transition-opacity">
+                        <div className="flex items-center gap-2">
+                            <div className="w-5 h-5 bg-secondary-900 rounded-md"></div>
+                            <span className="font-bold text-secondary-900 text-sm">Talento Verify</span>
                         </div>
+                        <p className="text-xs text-secondary-500">Report ID: {report?._id || 'SAMPLE-X92-J88'}</p>
                     </div>
                 </div>
+            </div>
+
+            {/* Bottom CTA Overlay */}
+            <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-30">
+                <button
+                    onClick={() => navigate('/signup')}
+                    className="flex items-center gap-2 px-6 py-3 bg-secondary-900 text-white rounded-full shadow-2xl hover:scale-105 transition-transform font-bold text-sm"
+                >
+                    Generate full report <ChevronRight size={16} />
+                </button>
             </div>
         </div>
     );

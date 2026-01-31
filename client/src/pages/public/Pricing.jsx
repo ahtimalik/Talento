@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getPlans, getSettings } from '../../services/api';
+import { Check, Zap, MessageCircle } from 'lucide-react';
 
 export default function Pricing() {
     const [plans, setPlans] = useState([]);
     const [settings, setSettings] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [billingCycle, setBillingCycle] = useState('monthly'); // 'monthly' | 'yearly'
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -15,7 +17,6 @@ export default function Pricing() {
                     getPlans(),
                     getSettings()
                 ]);
-
                 setPlans(plansRes.data.plans);
                 setSettings(settingsRes.data.settings);
             } catch (error) {
@@ -30,162 +31,207 @@ export default function Pricing() {
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="text-xl text-gray-600">Loading pricing...</div>
+            <div className="min-h-screen flex items-center justify-center bg-white">
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-slate-900"></div>
             </div>
         );
     }
 
-    return (
-        <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 py-12 px-4">
-            <div className="max-w-7xl mx-auto">
-                {/* Header */}
-                <div className="text-center mb-16">
-                    <h1 className="text-5xl font-extrabold text-gray-900 mb-4">
-                        Choose Your Plan
-                    </h1>
-                    <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                        Start with our free plan and upgrade as you grow. All prices in USD.
-                    </p>
-                </div>
+    // Separate enterprise plan from standard plans
+    const standardPlans = plans.filter(p => !p.isCustom);
+    const enterprisePlan = plans.find(p => p.isCustom);
 
-                {/* Pricing Cards */}
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-                    {plans.map((plan) => {
-                        if (plan.isCustom) return null; // Show custom plan separately
+    return (
+        <div className="min-h-screen bg-white font-sans text-slate-900 selection:bg-indigo-100 selection:text-indigo-900">
+
+            {/* Header Section */}
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-12 text-center">
+                <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6 text-slate-900">
+                    Simple pricing for <span className="text-indigo-600">growing teams</span>
+                </h1>
+                <p className="text-lg text-slate-500 max-w-2xl mx-auto mb-10 leading-relaxed">
+                    Start for free and scale as you need. No hidden fees. Cancel anytime.
+                </p>
+
+                {/* Premium Segmented Control Toggle */}
+                <div className="inline-flex bg-slate-100 p-1.5 rounded-xl mb-12 relative">
+                    <button
+                        onClick={() => setBillingCycle('monthly')}
+                        className={`relative z-10 px-8 py-2.5 text-sm font-bold rounded-lg transition-all duration-200 ${billingCycle === 'monthly'
+                                ? 'bg-white text-slate-900 shadow-sm'
+                                : 'text-slate-500 hover:text-slate-900'
+                            }`}
+                    >
+                        Monthly
+                    </button>
+                    <button
+                        onClick={() => setBillingCycle('yearly')}
+                        className={`relative z-10 px-8 py-2.5 text-sm font-bold rounded-lg transition-all duration-200 flex items-center gap-2 ${billingCycle === 'yearly'
+                                ? 'bg-white text-slate-900 shadow-sm'
+                                : 'text-slate-500 hover:text-slate-900'
+                            }`}
+                    >
+                        Yearly
+                        <span className="text-[10px] bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full font-extrabold uppercase tracking-wide">
+                            -20%
+                        </span>
+                    </button>
+                </div>
+            </div>
+
+            {/* Standard Pricing Cards Grid (4 Columns) */}
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-24">
+                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 items-start justify-center">
+                    {standardPlans.map((plan) => {
+                        const isPro = plan.isRecommended;
+                        const price = billingCycle === 'yearly' ? Math.floor(plan.price * 0.8) : plan.price;
 
                         return (
-                            <div
-                                key={plan.id}
-                                className={`relative p-8 rounded-2xl border-2 ${plan.isRecommended
-                                    ? 'border-indigo-600 bg-white shadow-2xl scale-105 z-10'
-                                    : 'border-gray-200 bg-white hover:shadow-xl'
-                                    } transition-all duration-300`}
-                            >
-                                {plan.isRecommended && (
-                                    <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                                        <span className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-2 rounded-full text-sm font-bold shadow-lg">
-                                            ⭐ Most Popular
-                                        </span>
+                            <div key={plan.id} className={`flex flex-col p-6 rounded-2xl transition-all duration-200 ${isPro
+                                    ? 'bg-white ring-2 ring-indigo-600 shadow-2xl z-10 relative scale-105'
+                                    : 'bg-white border border-slate-200 hover:border-slate-300 hover:shadow-lg'
+                                }`}>
+                                {isPro && (
+                                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-indigo-600 text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider shadow-sm">
+                                        Most Popular
                                     </div>
                                 )}
 
-                                <div className="text-center mb-6">
-                                    <h3 className="text-2xl font-bold text-gray-900 mb-2">{plan.name}</h3>
-                                    <div className="mb-4">
-                                        <span className="text-5xl font-extrabold text-gray-900">${plan.price}</span>
-                                        <span className="text-gray-600 text-lg">/month</span>
+                                <div className="mb-6">
+                                    <h3 className="text-lg font-bold text-slate-900 mb-2">{plan.name}</h3>
+                                    <div className="flex items-baseline gap-1 mb-2">
+                                        <span className="text-3xl font-bold tracking-tight text-slate-900">${price}</span>
+                                        <span className="text-slate-500 font-medium text-sm">/mo</span>
                                     </div>
-                                    <p className="text-gray-600 font-medium">
-                                        {plan.interviewLimit === -1 ? '∞ Unlimited' : plan.interviewLimit} interviews/month
+                                    <p className="text-xs text-slate-500 min-h-[32px] leading-relaxed">
+                                        {plan.name === 'Free' && "Perfect for testing."}
+                                        {plan.name === 'Starter' && "For small teams."}
+                                        {plan.name === 'Professional' && "Growing teams."}
+                                        {plan.name === 'Business' && "Scale & security."}
                                     </p>
                                 </div>
 
-                                <ul className="space-y-4 mb-8">
-                                    {plan.features.map((feature, idx) => (
-                                        <li key={idx} className="flex items-start gap-3">
-                                            <svg className="w-6 h-6 text-green-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                            </svg>
-                                            <span className="text-gray-700">{feature}</span>
-                                        </li>
-                                    ))}
-                                </ul>
-
                                 <button
                                     onClick={() => navigate('/signup')}
-                                    className={`w-full py-4 rounded-xl font-bold text-lg transition-all duration-300 ${plan.isRecommended
-                                        ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:from-indigo-700 hover:to-purple-700 shadow-lg hover:shadow-xl'
-                                        : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
+                                    className={`w-full py-3 rounded-xl font-bold text-xs transition-all duration-200 mb-6 ${isPro
+                                            ? 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-md shadow-indigo-200'
+                                            : 'bg-slate-900 text-white hover:bg-slate-800 shadow-md'
                                         }`}
                                 >
-                                    {plan.price === 0 ? 'Start Free' : 'Get Started'}
+                                    {plan.price === 0 ? 'Start for Free' : `Get ${plan.name}`}
                                 </button>
-                            </div>
-                        );
-                    })}
-                </div>
 
-                {/* Custom Plan */}
-                {plans.find(p => p.isCustom) && (
-                    <div className="max-w-4xl mx-auto">
-                        <div className="bg-gradient-to-r from-gray-900 to-gray-800 text-white p-8 rounded-2xl shadow-2xl">
-                            <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-                                <div className="flex-1">
-                                    <h3 className="text-3xl font-bold mb-2">Enterprise / Custom Plan</h3>
-                                    <p className="text-gray-300 text-lg mb-4">
-                                        Need a custom solution? We offer white-label, API access, SLA guarantees, and dedicated support.
-                                    </p>
-                                    <ul className="space-y-2 text-gray-300">
-                                        {plans.find(p => p.isCustom).features.map((feature, idx) => (
-                                            <li key={idx} className="flex items-center gap-2">
-                                                <span className="text-yellow-400">★</span>
+                                <div className="space-y-3">
+                                    <p className="text-[10px] font-bold uppercase text-slate-400 tracking-wider">Features</p>
+                                    <ul className="space-y-2">
+                                        <li className="flex items-center gap-2 text-xs text-slate-700">
+                                            <div className="w-4 h-4 rounded-full bg-slate-100 flex items-center justify-center shrink-0 text-slate-900">
+                                                <Zap size={10} fill="currentColor" />
+                                            </div>
+                                            <span className="font-semibold">
+                                                {plan.interviewLimit === -1 ? 'Unlimited' : plan.interviewLimit} interviews
+                                            </span>
+                                        </li>
+
+                                        {plan.features.map((feature, idx) => (
+                                            <li key={idx} className="flex items-start gap-2 text-xs text-slate-600">
+                                                <Check size={14} className="text-emerald-500 shrink-0 mt-0.5" />
                                                 <span>{feature}</span>
                                             </li>
                                         ))}
                                     </ul>
                                 </div>
-                                <div className="flex flex-col gap-3">
-                                    <a
-                                        href={`https://wa.me/${settings?.whatsappNumber || ''}`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="px-8 py-4 bg-green-500 text-white rounded-xl font-bold hover:bg-green-600 transition text-center whitespace-nowrap"
-                                    >
-                                        💬 Contact on WhatsApp
-                                    </a>
-                                    <a
-                                        href={`mailto:${settings?.contactEmail || 'contact@talento.com'}`}
-                                        className="px-8 py-4 bg-white text-gray-900 rounded-xl font-bold hover:bg-gray-100 transition text-center whitespace-nowrap"
-                                    >
-                                        📧 Email Us
-                                    </a>
+                            </div>
+                        );
+                    })}
+                </div>
+
+                {/* Enterprise Banner (High Visibility / Premium Light) */}
+                {enterprisePlan && (
+                    <div className="mt-16 bg-white rounded-[2rem] p-12 border-2 border-indigo-100 shadow-xl relative overflow-hidden group hover:border-indigo-200 transition-all">
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-50 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
+
+                        <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-12">
+                            <div className="max-w-2xl">
+                                <div className="flex items-center gap-3 mb-4">
+                                    <span className="px-4 py-1.5 bg-indigo-50 text-indigo-700 rounded-full text-xs font-bold uppercase tracking-wide border border-indigo-100">ENTERPRISE</span>
                                 </div>
+                                <h2 className="text-3xl font-bold mb-4 text-slate-900">Need a custom solution?</h2>
+                                <p className="text-slate-600 text-lg mb-8 leading-relaxed">
+                                    Get dedicated support, SSO, SLA guarantees, white-label options, and unlimited seats for your entire organization.
+                                </p>
+                                <div className="grid sm:grid-cols-2 gap-4">
+                                    {enterprisePlan.features.map((f, i) => (
+                                        <div key={i} className="flex items-center gap-2 text-sm text-slate-700 font-medium">
+                                            <div className="w-5 h-5 rounded-full bg-indigo-100 flex items-center justify-center shrink-0">
+                                                <Check size={12} className="text-indigo-600" strokeWidth={3} />
+                                            </div>
+                                            {f}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="flex flex-col gap-4 min-w-[200px]">
+                                <button
+                                    onClick={() => window.location.href = `mailto:${settings?.contactEmail || 'sales@talento.com'}`}
+                                    className="px-8 py-4 bg-slate-900 text-white rounded-xl font-bold hover:bg-slate-800 transition shadow-lg shadow-slate-200"
+                                >
+                                    Contact Sales
+                                </button>
+                                <button
+                                    onClick={() => window.open(`https://wa.me/${settings?.whatsappNumber || ''}`, '_blank')}
+                                    className="px-8 py-4 bg-white border-2 border-slate-200 text-slate-700 rounded-xl font-bold hover:bg-slate-50 hover:border-slate-300 transition flex items-center justify-center gap-2"
+                                >
+                                    <MessageCircle size={18} /> WhatsApp
+                                </button>
                             </div>
                         </div>
                     </div>
                 )}
+            </div>
 
-                {/* FAQ Section */}
-                <div className="max-w-3xl mx-auto mt-16">
-                    <h2 className="text-3xl font-bold text-center mb-8 text-gray-900">Frequently Asked Questions</h2>
-                    <div className="space-y-4">
-                        <details className="bg-white p-6 rounded-xl shadow-md">
-                            <summary className="font-semibold text-lg cursor-pointer text-gray-900">
-                                Can I change plans later?
-                            </summary>
-                            <p className="mt-3 text-gray-600">
-                                Yes! You can upgrade or downgrade your plan at any time from your dashboard.
-                            </p>
-                        </details>
-                        <details className="bg-white p-6 rounded-xl shadow-md">
-                            <summary className="font-semibold text-lg cursor-pointer text-gray-900">
-                                What payment methods do you accept?
-                            </summary>
-                            <p className="mt-3 text-gray-600">
-                                We accept all major credit cards via Stripe. For customers in Pakistan, we also accept JazzCash and PayPak.
-                            </p>
-                        </details>
-                        <details className="bg-white p-6 rounded-xl shadow-md">
-                            <summary className="font-semibold text-lg cursor-pointer text-gray-900">
-                                Is there a free trial?
-                            </summary>
-                            <p className="mt-3 text-gray-600">
-                                Yes! Our Free plan includes 5 interviews per month with no credit card required.
-                            </p>
-                        </details>
+            {/* Trust / FAQ Section */}
+            <div className="bg-slate-50 border-t border-slate-200 py-24">
+                <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-16">
+                    <h2 className="text-3xl font-bold text-slate-900 mb-4">Frequently Asked Questions</h2>
+                    <p className="text-slate-500">
+                        Have a different question and can't find the answer you're looking for? Reach out to our support team.
+                    </p>
+                </div>
+
+                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-x-12 gap-y-12">
+                    <div>
+                        <h3 className="text-lg font-bold text-slate-900 mb-3">Does Talento work for non-technical roles?</h3>
+                        <p className="text-slate-600 leading-relaxed text-sm">
+                            Currently, we optimize for software engineering, data science, and DevOps roles. However, our AI is capable of handling general aptitude interviews as well.
+                        </p>
+                    </div>
+                    <div>
+                        <h3 className="text-lg font-bold text-slate-900 mb-3">What happens if I go over my limit?</h3>
+                        <p className="text-slate-600 leading-relaxed text-sm">
+                            We do not cut off service immediately. We will notify you to upgrade your plan. You have a 3-day grace period to upgrade before interviews are paused.
+                        </p>
+                    </div>
+                    <div>
+                        <h3 className="text-lg font-bold text-slate-900 mb-3">Can I cancel my subscription?</h3>
+                        <p className="text-slate-600 leading-relaxed text-sm">
+                            Yes, you can cancel anytime from your dashboard. Your access will remain active until the end of your current billing period.
+                        </p>
+                    </div>
+                    <div>
+                        <h3 className="text-lg font-bold text-slate-900 mb-3">Is there a free trial for paid plans?</h3>
+                        <p className="text-slate-600 leading-relaxed text-sm">
+                            The Free plan is your trial! It includes 5 interviews/month forever. You can test all core features before deciding to upgrade.
+                        </p>
                     </div>
                 </div>
+            </div>
 
-                {/* Back to Home */}
-                <div className="text-center mt-12">
-                    <button
-                        onClick={() => navigate('/')}
-                        className="text-indigo-600 font-semibold hover:underline"
-                    >
-                        ← Back to Home
-                    </button>
-                </div>
+            {/* Footer Nav */}
+            <div className="py-8 bg-white text-center border-t border-slate-100">
+                <button onClick={() => navigate('/')} className="text-sm font-semibold text-slate-500 hover:text-indigo-600 transition">
+                    ← Return to Home
+                </button>
             </div>
         </div>
     );
