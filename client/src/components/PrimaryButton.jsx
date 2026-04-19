@@ -1,9 +1,9 @@
 import React from 'react'
 
-export default function PrimaryButton({ children, loading, disabled, type = 'submit' }) {
+export default function PrimaryButton({ children, loading, disabled, type = 'submit', onClick, className = '' }) {
   const label = loading
     ? (typeof children === 'string'
-        ? (children.toLowerCase().includes('create') ? 'Signing up...' : children.toLowerCase().includes('sign') ? 'Signing in...' : 'Loading...')
+        ? (children.toLowerCase().includes('create') ? 'Creating account...' : children.toLowerCase().includes('sign') ? 'Signing in...' : 'Loading...')
         : 'Loading...')
     : children
 
@@ -11,7 +11,9 @@ export default function PrimaryButton({ children, loading, disabled, type = 'sub
     <button
       type={type}
       disabled={disabled || loading}
-      className="w-full inline-flex justify-center items-center py-2 sm:py-3 px-4 bg-gradient-to-r from-indigo-600 to-indigo-500 hover:to-indigo-600 text-white font-semibold rounded-xl shadow-sm overflow-hidden focus:outline-none focus:ring-2 focus:ring-indigo-400 disabled:opacity-60 transition transform duration-150 hover:-translate-y-0.5"
+      onClick={onClick}
+      className={`w-full inline-flex justify-center items-center py-3 px-4 text-white font-semibold rounded-xl shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-150 hover:-translate-y-0.5 ${className}`}
+      style={{ backgroundColor: '#4f46e5' }}
     >
       {label}
     </button>

@@ -168,7 +168,7 @@ export default function Dashboard() {
                                             </td>
                                             <td className="px-6 py-4">
                                                 {interview.status === 'completed' ? (
-                                                    <button className="text-indigo-600 hover:text-indigo-800 font-medium text-sm">
+                                                    <button onClick={() => navigate(`/report/${interview._id}`)} className="text-indigo-600 hover:text-indigo-800 font-medium text-sm">
                                                         View Report
                                                     </button>
                                                 ) : (

@@ -11,6 +11,8 @@ import Signup from './pages/auth/Signup';
 import Login from './pages/auth/Login';
 import Dashboard from './pages/hr/Dashboard';
 import AdminDashboard from './pages/admin/AdminDashboard';
+import Interview from './pages/candidate/Interview';
+import InterviewReport from './pages/hr/InterviewReport';
 import ProtectedRoute from './components/ProtectedRoute';
 import PublicRoute from './components/PublicRoute';
 
@@ -26,6 +28,7 @@ export default function App() {
           <Route path="/sample-report" element={<SampleReport />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/terms" element={<Terms />} />
+          <Route path="/interview/:link" element={<Interview />} />
 
           {/* Auth routes - wrapped in PublicRoute to redirect if already logged in */}
           <Route element={<PublicRoute />}>
@@ -36,12 +39,14 @@ export default function App() {
           {/* Protected routes */}
           <Route element={<ProtectedRoute />}>
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/report/:id" element={<InterviewReport />} />
           </Route>
 
-          {/* Admin routes */}
-          <Route element={<ProtectedRoute role="superadmin" />}>
-            <Route path="/admin" element={<AdminDashboard />} />
-          </Route>
+        </Route>
+
+        {/* Admin routes - NO LAYOUT WRAPPER */}
+        <Route element={<ProtectedRoute role="superadmin" />}>
+          <Route path="/admin" element={<AdminDashboard />} />
         </Route>
       </Routes>
     </BrowserRouter>

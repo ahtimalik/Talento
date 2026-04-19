@@ -18,6 +18,8 @@ import {
     togglePlanStatus,
     getAllUsers,
     updateUserPlan,
+    createUser,
+    deleteUser,
     getPendingPayments,
     approvePayment,
     rejectPayment,
@@ -53,7 +55,9 @@ router.patch('/plans/:id/toggle', togglePlanStatus);
 
 // User Management
 router.get('/users', getAllUsers);
+router.post('/users', createUser);
 router.put('/users/:userId/plan', updateUserPlan);
+router.delete('/users/:userId', deleteUser);
 
 // Payment Approvals
 router.get('/payments/pending', getPendingPayments);

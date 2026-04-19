@@ -94,7 +94,7 @@ export default function Signup() {
 
       <div className="mt-6 text-center text-sm text-gray-600">
         Already have an account?{' '}
-        <button onClick={() => navigate('/login')} className="text-indigo-600 font-medium hover:underline">
+        <button onClick={() => navigate('/login')} className="text-[#4f46e5] font-medium hover:underline">
           Log in
         </button>
       </div>

@@ -352,6 +352,58 @@ export const updateUserPlan = async (req, res) => {
     }
 };
 
+// Create new HR user
+export const createUser = async (req, res) => {
+    try {
+        const { name, email, password, companyName, planId } = req.body;
+
+        const existingUser = await HR.findOne({ email });
+        if (existingUser) {
+            return res.status(400).json({ success: false, message: 'User with this email already exists' });
+        }
+
+        const newUser = new HR({
+            name,
+            email,
+            password,
+            companyName,
+            role: 'hr',
+            currentPlan: planId || null,
+            paymentStatus: planId ? 'active' : 'pending'
+        });
+
+        await newUser.save();
+
+        res.json({ success: true, message: 'User provisioned successfully', user: newUser });
+    } catch (error) {
+        console.error('Create user error:', error);
+        res.status(500).json({ success: false, message: 'Error creating user' });
+    }
+};
+
+// Delete HR user
+export const deleteUser = async (req, res) => {
+    try {
+        const { userId } = req.params;
+
+        const user = await HR.findById(userId);
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        // Delete associated interviews and payments (optional, could just cascade or ignore)
+        await Interview.deleteMany({ hrId: userId });
+        await Payment.deleteMany({ hrId: userId });
+        
+        await HR.findByIdAndDelete(userId);
+
+        res.json({ success: true, message: 'User permanently removed' });
+    } catch (error) {
+        console.error('Delete user error:', error);
+        res.status(500).json({ success: false, message: 'Error deleting user' });
+    }
+};
+
 // ========== PAYMENT APPROVALS ==========
 
 // Get pending manual payments

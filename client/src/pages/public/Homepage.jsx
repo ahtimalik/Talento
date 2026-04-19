@@ -4,7 +4,7 @@ import { getHomepageContent, getPlans, getSettings } from '../../services/api';
 import {
     CheckCircle, Play, Users, Award, BarChart, Clock, Shield, Zap, ArrowRight, Star,
     ChevronDown, ChevronUp, Globe, Cpu, MessageSquare, Video, Calendar, Briefcase,
-    Code, Rocket, TrendingUp, Target, Sparkles, Brain, FileText, Settings, Layout
+    Code, Rocket, TrendingUp, Target, Sparkles, Brain, FileText, Settings, Layout, Check, MessageCircle
 } from 'lucide-react';
 
 // Import images
@@ -19,6 +19,7 @@ export default function Homepage() {
     const [settings, setSettings] = useState(null);
     const [loading, setLoading] = useState(true);
     const [openFaq, setOpenFaq] = useState(null);
+    const [billingCycle, setBillingCycle] = useState('monthly'); // 'monthly' | 'yearly'
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -30,7 +31,7 @@ export default function Homepage() {
                     getSettings()
                 ]);
                 setContent(contentRes.data.content);
-                setPlans(plansRes.data.plans.slice(0, 3));
+                setPlans(plansRes.data.plans);
                 setSettings(settingsRes.data.settings);
             } catch (error) {
                 console.error('Error fetching data:', error);
@@ -52,6 +53,10 @@ export default function Homepage() {
     }
 
     const productName = settings?.productName || 'Talento';
+
+    // Separate enterprise plan from standard plans
+    const standardPlans = plans.filter(p => !p.isCustom);
+    const enterprisePlan = plans.find(p => p.isCustom);
 
     return (
         <div className="bg-background font-sans text-secondary-900 selection:bg-primary-100 selection:text-primary-900">
@@ -82,7 +87,7 @@ export default function Homepage() {
                             </p>
 
                             <div className="flex flex-col sm:flex-row gap-4 mb-10">
-                                <button onClick={() => navigate('/signup')} className="px-8 py-4 bg-secondary-900 text-indigo-600 rounded-xl font-bold text-base hover:bg-secondary-800 transition shadow-xl shadow-secondary-900/10 hover:shadow-2xl flex items-center justify-center gap-2 group">
+                                <button onClick={() => navigate('/signup')} className="px-8 py-4 bg-[#0f172a] text-indigo-400 rounded-xl font-bold text-base hover:bg-[#1e293b] transition shadow-xl flex items-center justify-center gap-2 group">
                                     Start Free Trial
                                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                                 </button>
@@ -481,7 +486,153 @@ export default function Homepage() {
                 </div>
             </section>
 
-            {/* Expanded FAQ - Modern Grid Layout */}
+            {/* Pricing Section - Added from Pricing Page */}
+            <section className="py-24 bg-white border-t border-secondary-100">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="text-center mb-16">
+                        <h2 className="text-3xl md:text-5xl font-bold tracking-tight mb-6 text-secondary-900">
+                            Simple pricing for <span className="text-indigo-600">growing teams</span>
+                        </h2>
+                        <p className="text-lg text-secondary-500 max-w-2xl mx-auto mb-10 leading-relaxed">
+                            Start for free and scale as you need. No hidden fees. Cancel anytime.
+                        </p>
+
+                        {/* Premium Segmented Control Toggle */}
+                        <div className="inline-flex bg-secondary-100 p-1.5 rounded-xl mb-12 relative">
+                            <button
+                                onClick={() => setBillingCycle('monthly')}
+                                className={`relative z-10 px-8 py-2.5 text-sm font-bold rounded-lg transition-all duration-200 ${billingCycle === 'monthly'
+                                    ? 'bg-white text-secondary-900 shadow-sm'
+                                    : 'text-secondary-500 hover:text-secondary-900'
+                                    }`}
+                            >
+                                Monthly
+                            </button>
+                            <button
+                                onClick={() => setBillingCycle('yearly')}
+                                className={`relative z-10 px-8 py-2.5 text-sm font-bold rounded-lg transition-all duration-200 flex items-center gap-2 ${billingCycle === 'yearly'
+                                    ? 'bg-white text-secondary-900 shadow-sm'
+                                    : 'text-secondary-500 hover:text-secondary-900'
+                                    }`}
+                            >
+                                Yearly
+                                <span className="text-[10px] bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full font-extrabold uppercase tracking-wide">
+                                    -20%
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Standard Pricing Cards Grid */}
+                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 items-start justify-center mb-24">
+                        {standardPlans.map((plan) => {
+                            const isPro = plan.isRecommended;
+                            const price = billingCycle === 'yearly' ? Math.floor(plan.price * 0.8) : plan.price;
+
+                            return (
+                                <div key={plan.id} className={`flex flex-col p-6 rounded-2xl transition-all duration-200 ${isPro
+                                    ? 'bg-white ring-2 ring-indigo-600 shadow-2xl z-10 relative scale-105'
+                                    : 'bg-white border border-secondary-200 hover:border-secondary-300 hover:shadow-lg'
+                                    }`}>
+                                    {isPro && (
+                                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-indigo-600 text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider shadow-sm">
+                                            Most Popular
+                                        </div>
+                                    )}
+
+                                    <div className="mb-6">
+                                        <h3 className="text-lg font-bold text-secondary-900 mb-2">{plan.name}</h3>
+                                        <div className="flex items-baseline gap-1 mb-2">
+                                            <span className="text-3xl font-bold tracking-tight text-secondary-900">${price}</span>
+                                            <span className="text-secondary-500 font-medium text-sm">/mo</span>
+                                        </div>
+                                        <p className="text-xs text-secondary-500 min-h-[32px] leading-relaxed">
+                                            {plan.name === 'Free' && "Perfect for testing."}
+                                            {plan.name === 'Starter' && "For small teams."}
+                                            {plan.name === 'Professional' && "Growing teams."}
+                                            {plan.name === 'Business' && "Scale & security."}
+                                        </p>
+                                    </div>
+
+                                    <button
+                                        onClick={() => navigate('/signup')}
+                                        className={`w-full py-3 rounded-xl font-bold text-xs transition-all duration-200 mb-6 ${isPro
+                                            ? 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-md shadow-indigo-200'
+                                            : 'bg-secondary-900 text-white hover:bg-secondary-800 shadow-md'
+                                            }`}
+                                    >
+                                        {plan.price === 0 ? 'Start for Free' : `Get ${plan.name}`}
+                                    </button>
+
+                                    <div className="space-y-3">
+                                        <p className="text-[10px] font-bold uppercase text-secondary-400 tracking-wider">Features</p>
+                                        <ul className="space-y-2">
+                                            <li className="flex items-center gap-2 text-xs text-secondary-700">
+                                                <div className="w-4 h-4 rounded-full bg-secondary-100 flex items-center justify-center shrink-0 text-secondary-900">
+                                                    <Zap size={10} fill="currentColor" />
+                                                </div>
+                                                <span className="font-semibold">
+                                                    {plan.interviewLimit === -1 ? 'Unlimited' : plan.interviewLimit} interviews
+                                                </span>
+                                            </li>
+
+                                            {plan.features.map((feature, idx) => (
+                                                <li key={idx} className="flex items-start gap-2 text-xs text-secondary-600">
+                                                    <Check size={14} className="text-emerald-500 shrink-0 mt-0.5" />
+                                                    <span>{feature}</span>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+
+                    {/* Enterprise Banner */}
+                    {enterprisePlan && (
+                        <div className="bg-white rounded-[2rem] p-12 border-2 border-indigo-100 shadow-xl relative overflow-hidden group hover:border-indigo-200 transition-all">
+                            <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-50 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
+
+                            <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-12">
+                                <div className="max-w-2xl">
+                                    <div className="flex items-center gap-3 mb-4">
+                                        <span className="px-4 py-1.5 bg-indigo-50 text-indigo-700 rounded-full text-xs font-bold uppercase tracking-wide border border-indigo-100">ENTERPRISE</span>
+                                    </div>
+                                    <h2 className="text-3xl font-bold mb-4 text-secondary-900">Need a custom solution?</h2>
+                                    <p className="text-secondary-600 text-lg mb-8 leading-relaxed">
+                                        Get dedicated support, SSO, SLA guarantees, white-label options, and unlimited seats for your entire organization.
+                                    </p>
+                                    <div className="grid sm:grid-cols-2 gap-4">
+                                        {enterprisePlan.features.map((f, i) => (
+                                            <div key={i} className="flex items-center gap-2 text-sm text-secondary-700 font-medium">
+                                                <div className="w-5 h-5 rounded-full bg-indigo-100 flex items-center justify-center shrink-0">
+                                                    <Check size={12} className="text-indigo-600" strokeWidth={3} />
+                                                </div>
+                                                {f}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div className="flex flex-col gap-4 min-w-[200px]">
+                                    <button
+                                        onClick={() => window.location.href = `mailto:${settings?.contactEmail || 'sales@talento.com'}`}
+                                        className="px-8 py-4 bg-[#0f172a] text-white rounded-xl font-bold hover:bg-[#1e293b] transition shadow-lg"
+                                    >
+                                        Contact Sales
+                                    </button>
+                                    <button
+                                        onClick={() => window.open(`https://wa.me/${settings?.whatsappNumber || ''}`, '_blank')}
+                                        className="px-8 py-4 bg-white border-2 border-secondary-200 text-secondary-700 rounded-xl font-bold hover:bg-secondary-50 hover:border-secondary-300 transition flex items-center justify-center gap-2"
+                                    >
+                                        <MessageCircle size={18} /> WhatsApp
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </section>
             <section className="py-24 bg-white border-t border-secondary-100">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="grid lg:grid-cols-3 gap-12 lg:gap-24">

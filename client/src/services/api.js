@@ -54,6 +54,9 @@ export const getManualPaymentInstructions = () => axios.get(`${API_BASE_URL}/pay
 export const getDashboardStats = () => api.get('/admin/dashboard/stats');
 export const getAllSettings = () => api.get('/admin/settings');
 export const updateGlobalSettings = (data) => api.put('/admin/settings/global', data);
+export const updateHomepageSettings = (data) => api.put('/admin/settings/homepage', data);
+export const updateFeaturesSettings = (data) => api.put('/admin/settings/features', data);
+export const updateLegalSettings = (data) => api.put('/admin/settings/legal', data);
 export const getAllPlans = () => api.get('/admin/plans');
 export const createPlan = (data) => api.post('/admin/plans', data);
 export const updatePlan = (id, data) => api.put(`/admin/plans/${id}`, data);

@@ -16,16 +16,11 @@ const checkPlanLimits = async (req, res, next) => {
             });
         }
 
-        // If no plan assigned, deny access
-        if (!hr.currentPlan) {
-            return res.status(403).json({
-                success: false,
-                message: 'No active plan. Please subscribe to a plan.',
-                requiresUpgrade: true
-            });
-        }
-
-        const plan = hr.currentPlan;
+        // If no plan is assigned (e.g. during fresh signup before seeds), default to virtual Free plan
+        const plan = hr.currentPlan || {
+            name: 'Free',
+            interviewLimit: 5
+        };
 
         // Check if plan has unlimited interviews (-1)
         if (plan.interviewLimit === -1) {

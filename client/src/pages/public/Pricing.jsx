@@ -174,7 +174,7 @@ export default function Pricing() {
                             <div className="flex flex-col gap-4 min-w-[200px]">
                                 <button
                                     onClick={() => window.location.href = `mailto:${settings?.contactEmail || 'sales@talento.com'}`}
-                                    className="px-8 py-4 bg-slate-900 text-white rounded-xl font-bold hover:bg-slate-800 transition shadow-lg shadow-slate-200"
+                                    className="px-8 py-4 bg-[#0f172a] text-white rounded-xl font-bold hover:bg-[#1e293b] transition shadow-lg"
                                 >
                                     Contact Sales
                                 </button>
