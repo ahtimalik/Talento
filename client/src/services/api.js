@@ -62,6 +62,9 @@ export const createPlan = (data) => api.post('/admin/plans', data);
 export const updatePlan = (id, data) => api.put(`/admin/plans/${id}`, data);
 export const deletePlan = (id) => api.delete(`/admin/plans/${id}`);
 export const getAllUsers = () => api.get('/admin/users');
+export const createUser = (data) => api.post('/admin/users', data);
+export const updateUserPlan = (id, data) => api.put(`/admin/users/${id}/plan`, data);
+export const deleteUser = (id) => api.delete(`/admin/users/${id}`);
 export const getPendingPayments = () => api.get('/admin/payments/pending');
 export const approvePayment = (id) => api.post(`/admin/payments/${id}/approve`);
 

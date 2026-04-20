@@ -18,6 +18,7 @@ export default function AdminDashboard() {
     const [usersList, setUsersList] = useState([]);
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [contentModal, setContentModal] = useState(null);
+    const [userModal, setUserModal] = useState(null);
     const [tickets, setTickets] = useState([
         { id: 1, title: "API webhooks not firing upon candidate evaluation completion", user: "Acme Corporation", status: "Critical Error", time: "25 mins ago" },
         { id: 2, title: "Custom enterprise branding placement requirements", user: "Startup Inc", status: "Open Discussion", time: "2 hours ago" },
@@ -543,7 +544,7 @@ export default function AdminDashboard() {
                                         <h2 className="text-3xl font-black text-slate-800 tracking-tight">Identity Matrix</h2>
                                         <p className="text-slate-500 mt-1.5 text-[14px] font-medium">Manage organization accounts and administrative privileges.</p>
                                     </div>
-                                    <button className="flex items-center justify-center gap-2 px-6 py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-[14px] rounded-xl shadow-[0_4px_14px_0_rgba(79,70,229,0.39)] transition-all hover:-translate-y-0.5 active:translate-y-0">
+                                    <button onClick={() => setUserModal({ mode: 'create' })} className="flex items-center justify-center gap-2 px-6 py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-[14px] rounded-xl shadow-[0_4px_14px_0_rgba(79,70,229,0.39)] transition-all hover:-translate-y-0.5 active:translate-y-0">
                                         <span className="material-symbols-rounded text-[20px]">person_add</span>
                                         Provision User
                                     </button>
@@ -590,7 +591,7 @@ export default function AdminDashboard() {
                                                             {new Date(user.createdAt || Date.now()).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}
                                                         </td>
                                                         <td className="px-8 py-6 text-right">
-                                                            <button className="p-2.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all shadow-sm border border-transparent hover:border-indigo-100">
+                                                            <button onClick={() => setUserModal({ mode: 'edit', user })} className="p-2.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all shadow-sm border border-transparent hover:border-indigo-100" title="Manage Account">
                                                                 <span className="material-symbols-rounded text-[20px]">manage_accounts</span>
                                                             </button>
                                                         </td>
@@ -629,13 +630,13 @@ export default function AdminDashboard() {
                                                 <span className="material-symbols-rounded text-[18px]">cloud_sync</span>
                                             </h3>
                                             <div className="flex items-end gap-3 mb-6">
-                                                <span className="text-5xl font-black text-slate-800 tracking-tighter">1,248</span>
+                                                <span className="text-5xl font-black text-slate-800 tracking-tighter">{stats?.totalInterviews || 0}</span>
                                                 <span className="text-[14px] font-bold text-emerald-500 mb-1.5 flex items-center"><span className="material-symbols-rounded text-[16px]">trending_up</span> 14.5%</span>
                                             </div>
                                         </div>
                                         <div className="h-32 w-full flex items-end gap-2.5 z-10 relative mt-auto border-b border-slate-100 pb-2">
                                             {[30, 45, 25, 60, 40, 80, 50, 90, 70, 100, 60, 85].map((h, i) => (
-                                                <div key={i} className="flex-1 bg-indigo-100 rounded-t group-hover:bg-indigo-400 transition-all duration-500 ease-out" style={{ height: `${h}%` }}></div>
+                                                <div key={i} className="flex-1 bg-indigo-100 rounded-t group-hover:bg-indigo-400 transition-all duration-500 ease-out" style={{ height: `${stats?.totalInterviews ? (h * (stats.totalInterviews % 2 === 0 ? 1 : 0.8)) : h}%` }}></div>
                                             ))}
                                         </div>
                                         <div className="absolute inset-x-0 bottom-0 h-[60%] bg-gradient-to-t from-indigo-50/50 to-transparent z-0"></div>
@@ -643,21 +644,21 @@ export default function AdminDashboard() {
                                     
                                     <div className="bg-white p-8 rounded-[24px] shadow-[0_2px_20px_-4px_rgba(0,0,0,0.05)] border border-slate-100 relative overflow-hidden min-h-[350px]">
                                         <h3 className="text-[13px] font-black text-slate-400 uppercase tracking-widest mb-8 border-b border-slate-100 pb-4 flex items-center justify-between">
-                                            Onboarding Funnel
+                                            Platform User Funnel
                                             <span className="material-symbols-rounded text-[18px]">filter_alt</span>
                                         </h3>
                                         <div className="space-y-8">
                                             <div className="relative">
-                                                <div className="flex justify-between text-[14px] font-bold mb-2"><span className="text-slate-600 tracking-wide">Site Visitors</span><span className="text-slate-800 font-black">12,500</span></div>
-                                                <div className="w-full bg-slate-100 h-3.5 rounded-full overflow-hidden shadow-inner"><div className="bg-indigo-500 h-full w-[100%] rounded-full shadow-[0_0_10px_rgba(99,102,241,0.5)] transition-all duration-1000"></div></div>
+                                                <div className="flex justify-between text-[14px] font-bold mb-2"><span className="text-slate-600 tracking-wide">Total Users / HRs</span><span className="text-slate-800 font-black">{stats?.totalUsers || 0}</span></div>
+                                                <div className="w-full bg-slate-100 h-3.5 rounded-full overflow-hidden shadow-inner"><div className="bg-indigo-500 h-full rounded-full shadow-[0_0_10px_rgba(99,102,241,0.5)] transition-all duration-1000" style={{ width: '100%' }}></div></div>
                                             </div>
                                             <div className="relative pl-4 border-l-2 border-slate-100">
-                                                <div className="flex justify-between text-[14px] font-bold mb-2"><span className="text-slate-600 tracking-wide">Accounts Created</span><span className="text-slate-800 font-black">3,200</span></div>
-                                                <div className="w-full bg-slate-100 h-3.5 rounded-full overflow-hidden shadow-inner"><div className="bg-purple-500 h-full w-[25.6%] rounded-full shadow-[0_0_10px_rgba(168,85,247,0.5)] transition-all duration-1000 delay-100"></div></div>
+                                                <div className="flex justify-between text-[14px] font-bold mb-2"><span className="text-slate-600 tracking-wide">Total Intervews Run</span><span className="text-slate-800 font-black">{stats?.totalInterviews || 0}</span></div>
+                                                <div className="w-full bg-slate-100 h-3.5 rounded-full overflow-hidden shadow-inner"><div className="bg-purple-500 h-full rounded-full shadow-[0_0_10px_rgba(168,85,247,0.5)] transition-all duration-1000 delay-100" style={{ width: `${stats?.totalInterviews ? 65 : 10}%` }}></div></div>
                                             </div>
                                             <div className="relative pl-8 border-l-2 border-slate-100">
-                                                <div className="flex justify-between text-[14px] font-bold mb-2"><span className="text-slate-600 tracking-wide">Paid Subscriptions</span><span className="text-slate-800 font-black">840</span></div>
-                                                <div className="w-full bg-slate-100 h-3.5 rounded-full overflow-hidden shadow-inner"><div className="bg-emerald-500 h-full w-[6.7%] rounded-full shadow-[0_0_10px_rgba(16,185,129,0.5)] transition-all duration-1000 delay-200"></div></div>
+                                                <div className="flex justify-between text-[14px] font-bold mb-2"><span className="text-slate-600 tracking-wide">Completed Success Rate</span><span className="text-slate-800 font-black">{stats?.completedInterviews || 0}</span></div>
+                                                <div className="w-full bg-slate-100 h-3.5 rounded-full overflow-hidden shadow-inner"><div className="bg-emerald-500 h-full rounded-full shadow-[0_0_10px_rgba(16,185,129,0.5)] transition-all duration-1000 delay-200" style={{ width: `${stats?.completedInterviews ? 95 : 5}%` }}></div></div>
                                             </div>
                                         </div>
                                     </div>
@@ -776,6 +777,80 @@ export default function AdminDashboard() {
                 </div>
 
                 {/* MODALS */}
+                {userModal && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-0">
+                        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setUserModal(null)}></div>
+                        <div className="bg-white rounded-[24px] shadow-2xl w-full max-w-[500px] overflow-hidden relative z-10 animate-in fade-in zoom-in-95 duration-300">
+                            <div className="px-8 py-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+                                <h3 className="text-xl font-black text-slate-800 tracking-tight flex items-center gap-2">
+                                    <span className="material-symbols-rounded text-indigo-500">{userModal.mode === 'create' ? 'person_add' : 'manage_accounts'}</span>
+                                    {userModal.mode === 'create' ? 'Provision New User' : 'Edit User Identity'}
+                                </h3>
+                                <button onClick={() => setUserModal(null)} className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-400 hover:bg-rose-100 hover:text-rose-500 transition-colors">
+                                    <span className="material-symbols-rounded text-[20px]">close</span>
+                                </button>
+                            </div>
+                            <div className="p-8 space-y-5">
+                                <div>
+                                    <label className="block text-[13px] font-bold text-slate-500 uppercase tracking-wide mb-2">Entity Name</label>
+                                    <input type="text" id="userName" defaultValue={userModal.user?.name || ''} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-bold text-slate-800 outline-none" placeholder="Organization or HR Name" />
+                                </div>
+                                <div>
+                                    <label className="block text-[13px] font-bold text-slate-500 uppercase tracking-wide mb-2">Auth Email</label>
+                                    <input type="email" id="userEmail" defaultValue={userModal.user?.email || ''} disabled={userModal.mode === 'edit'} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-medium text-slate-800 outline-none disabled:opacity-60 disabled:cursor-not-allowed" placeholder="login@acme.com" />
+                                </div>
+                                {userModal.mode === 'create' && (
+                                    <div>
+                                        <label className="block text-[13px] font-bold text-slate-500 uppercase tracking-wide mb-2">Temporary Password</label>
+                                        <input type="text" id="userPassword" placeholder="Strong Auth Key" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-medium text-slate-800 outline-none" />
+                                    </div>
+                                )}
+                                <div>
+                                    <label className="block text-[13px] font-bold text-slate-500 uppercase tracking-wide mb-2">Subscription Plan</label>
+                                    <select id="userPlan" defaultValue={userModal.user?.currentPlan?._id || ''} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-bold text-slate-800 outline-none appearance-none">
+                                        <option value="">No Active Plan</option>
+                                        {plans.map(p => (
+                                            <option key={p._id} value={p._id}>{p.name} - ${p.price}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </div>
+                            <div className="px-8 py-5 border-t border-slate-100 bg-slate-50/50 flex justify-between gap-3 rounded-b-[24px]">
+                                {userModal.mode === 'edit' ? (
+                                    <button onClick={async () => {
+                                        if (confirm('Are you strictly sure you want to permanently delete this user?')) {
+                                            try { await deleteUser(userModal.user._id); alert('Entity Destroyed.'); fetchData(); setUserModal(null); } catch(err) { alert('Deletion failed or blocked.'); }
+                                        }
+                                    }} className="px-4 py-2 text-rose-500 font-bold text-[13px] hover:bg-rose-50 rounded-xl transition-colors">Terminate User</button>
+                                ) : <div></div>}
+                                
+                                <div className="flex gap-2">
+                                    <button onClick={() => setUserModal(null)} className="px-6 py-2.5 bg-white border border-slate-200 text-slate-600 font-bold text-[13px] rounded-xl hover:bg-slate-50 transition-colors">Cancel</button>
+                                    <button onClick={async () => {
+                                        try {
+                                            const name = document.getElementById('userName').value;
+                                            const email = document.getElementById('userEmail').value;
+                                            const planId = document.getElementById('userPlan').value || null;
+                                            if (userModal.mode === 'create') {
+                                                const password = document.getElementById('userPassword').value;
+                                                await createUser({ name, email, password, companyName: name, planId });
+                                            } else {
+                                                await updateUserPlan(userModal.user._id, { planId });
+                                            }
+                                            await fetchData();
+                                            setUserModal(null);
+                                        } catch(err) {
+                                            alert('Server Rejected Operation.');
+                                        }
+                                    }} className="px-8 py-2.5 bg-indigo-600 text-white font-bold text-[13px] rounded-xl shadow-[0_4px_14px_0_rgba(79,70,229,0.39)] hover:bg-indigo-700 transition-all active:scale-95">
+                                        {userModal.mode === 'create' ? 'Provision' : 'Save Changes'}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
                 {contentModal && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-0">
                         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setContentModal(null)}></div>
